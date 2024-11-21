@@ -1,88 +1,105 @@
-
-
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
-interface FileSystemComponent {
-    void display();
-    int getSize();
-}
+class Book {
+    String title, author, genre, isbn;
+    boolean isAvailable = true;
 
-class File implements FileSystemComponent {
-    private String name;
-    private int size;
-
-    public File(String name, int size) {
-        this.name = name;
-        this.size = size;
-    }
-
-    @Override
-    public void display() {
-        System.out.println("File: " + name + ", Size: " + size + " KB");
-    }
-
-    @Override
-    public int getSize() {
-        return size;
+    Book(String title, String author, String genre, String isbn) {
+        this.title = title;
+        this.author = author;
+        this.genre = genre;
+        this.isbn = isbn;
     }
 }
 
-class Directory implements FileSystemComponent {
-    private String name;
-    private List<FileSystemComponent> components = new ArrayList<>();
+class Reader {
+    String name;
+    List<Book> rentedBooks = new ArrayList<>();
 
-    public Directory(String name) {
+    Reader(String name) {
         this.name = name;
     }
 
-    public void addComponent(FileSystemComponent component) {
-        if (!components.contains(component)) {
-            components.add(component);
+    void rentBook(Book book) {
+        if (book.isAvailable) {
+            rentedBooks.add(book);
+            book.isAvailable = false;
+            System.out.println(name + " взял книгу: " + book.title);
+        } else {
+            System.out.println("Книга " + book.title + " недоступна.");
         }
-    }
-
-    public void removeComponent(FileSystemComponent component) {
-        components.remove(component);
-    }
-
-    @Override
-    public void display() {
-        System.out.println("Directory: " + name);
-        for (FileSystemComponent component : components) {
-            component.display();
-        }
-    }
-
-    @Override
-    public int getSize() {
-        int totalSize = 0;
-        for (FileSystemComponent component : components) {
-            totalSize += component.getSize();
-        }
-        return totalSize;
     }
 }
 
-public class FileSystemDemo {
+class Librarian {
+    String name;
+
+    Librarian(String name) {
+        this.name = name;
+    }
+
+    void issueBook(Book book, Reader reader) {
+        if (book.isAvailable) {
+            reader.rentBook(book);
+            System.out.println(name + " выдал книгу: " + book.title + " читателю: " + reader.name);
+        } else {
+            System.out.println("Книга " + book.title + " уже выдана.");
+        }
+    }
+}
+
+class Library {
+    List<Book> books = new ArrayList<>();
+
+    void addBook(Book book) {
+        books.add(book);
+    }
+
+    void listBooks() {
+        books.forEach(book -> System.out.println(book.title + " - " + book.author + " [" + (book.isAvailable ? "Доступна" : "Выдана") + "]"));
+    }
+
+    void displayDiagram() {
+        System.out.println("""
+                +------------------+         +------------------+
+                |     Library      |<-------◆|      Book        |
+                +------------------+         +------------------+
+                | List<Book> books |         | title: String    |
+                |                  |         | author: String   |
+                | + addBook()      |         | genre: String    |
+                | + listBooks()    |         | isbn: String     |
+                +------------------+         | isAvailable: Boolean |
+                      ^                     +------------------+
+                      |
+                +------------------+         +------------------+
+                |     Reader       |         |    Librarian     |
+                +------------------+         +------------------+
+                | name: String     |         | name: String     |
+                | List<Book> rented|         | + issueBook()    |
+                +------------------+         +------------------+""");
+    }
+}
+
+public class LibraryApp {
     public static void main(String[] args) {
-        File file1 = new File("file1.txt", 100);
-        File file2 = new File("file2.jpg", 200);
-        File file3 = new File("file3.pdf", 150);
+        Library library = new Library();
 
-        Directory dir1 = new Directory("Documents");
-        Directory dir2 = new Directory("Pictures");
+        Book book1 = new Book("1984", "Джордж Оруэлл", "Фантастика", "123");
+        Book book2 = new Book("Мастер и Маргарита", "Михаил Булгаков", "Роман", "456");
+        library.addBook(book1);
+        library.addBook(book2);
 
-        dir1.addComponent(file1);
-        dir1.addComponent(file3);
+        Reader reader = new Reader("Диас");
+        Librarian librarian = new Librarian("Алиса");
 
-        dir2.addComponent(file2);
+        librarian.issueBook(book1, reader);
+        librarian.issueBook(book2, reader);
 
-        Directory rootDir = new Directory("Root");
-        rootDir.addComponent(dir1);
-        rootDir.addComponent(dir2);
+        System.out.println("\nСписок книг в библиотеке:");
+        library.listBooks();
 
-        rootDir.display();
-        System.out.println("Total size of Root directory: " + rootDir.getSize() + " KB");
+        System.out.println("\nДиаграмма классов:");
+        library.displayDiagram();
     }
 }
