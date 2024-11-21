@@ -1,4 +1,4 @@
-// Класс Book (Книга)
+
 public class Book {
     private String title;
     private String author;
@@ -34,7 +34,7 @@ public class Book {
     }
 }
 
-// Класс Reader (Читатель)
+
 public class Reader {
     private String firstName;
     private String lastName;
@@ -55,7 +55,7 @@ public class Reader {
     }
 }
 
-// Класс Librarian (Библиотекарь)
+
 public class Librarian {
     public void issueBook(Book book, Reader reader, AccountSystem accountSystem) {
         accountSystem.issueBook(book, reader);
@@ -68,7 +68,7 @@ public class Librarian {
     }
 }
 
-// Класс Catalog (Каталог)
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -120,7 +120,6 @@ public class Catalog {
     }
 }
 
-// Класс AccountSystem (Учетная система)
 import java.util.HashMap;
 import java.util.Map;
 
@@ -144,7 +143,7 @@ public class AccountSystem {
     }
 }
 
-// Интерфейс CatalogService (Интерфейс для каталога)
+
 public interface CatalogService {
     void addBook(Book book);
     List<Book> searchByAuthor(String author);
@@ -152,14 +151,12 @@ public interface CatalogService {
     List<Book> searchByGenre(String genre);
 }
 
-// Интерфейс AccountService (Интерфейс для учетной системы)
 public interface AccountService {
     void issueBook(Book book, Reader reader);
     void returnBook(Book book, Reader reader);
     boolean isBookIssued(Book book);
 }
 
-// Основной класс приложения LibraryApp
 public class LibraryApp {
     public static void main(String[] args) {
         Catalog catalog = new Catalog();
